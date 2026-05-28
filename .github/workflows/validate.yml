@@ -1,0 +1,40 @@
+name: Validate Submission
+on: [pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for modified existing files
+        run: |
+          MODIFIED=$(git diff --name-only origin/main...HEAD --diff-filter=M)
+          if [ -n "$MODIFIED" ]; then
+            echo "ERROR: Modified existing files (append-only violation):"
+            echo "$MODIFIED"
+            exit 1
+          fi
+          echo "✓ No existing files modified"
+      - name: Validate new file structure
+        run: |
+          NEW_FILES=$(git diff --name-only origin/main...HEAD --diff-filter=A)
+          for f in $NEW_FILES; do
+            # Check filename doesn't contain path traversal
+            if echo "$f" | grep -q '\.\.'; then
+              echo "ERROR: Path traversal detected in $f"
+              exit 1
+            fi
+            # Check file size < 100KB
+            if [ -f "$f" ] && [ "$(stat --format=%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null)" -gt 102400 ]; then
+              echo "ERROR: File too large: $f"
+              exit 1
+            fi
+            # Check markdown files have valid frontmatter
+            if echo "$f" | grep -q '\.md$'; then
+              if ! head -1 "$f" | grep -q '^---$'; then
+                echo "ERROR: Missing frontmatter delimiter in $f"
+                exit 1
+              fi
+            fi
+          done
+          echo "✓ All new files valid"
