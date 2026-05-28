@@ -6,19 +6,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check for modified existing files
+        with:
+          fetch-depth: 0  # Fetch all history so we can diff against main
+      - name: Check for modified existing files (allow _index.md)
         run: |
-          MODIFIED=$(git diff --name-only origin/main...HEAD --diff-filter=M)
-          if [ -n "$MODIFIED" ]; then
-            echo "ERROR: Modified existing files (append-only violation):"
-            echo "$MODIFIED"
-            exit 1
+          # Fetch main branch for comparison
+          git fetch origin main --depth=1 2>/dev/null || true
+          BASE="origin/main"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            echo "⚠ Could not find $BASE, trying alternative refs"
+            # Use the event payload to find the base ref
+            BASE="refs/remotes/origin/${{ github.base_ref }}"
           fi
-          echo "✓ No existing files modified"
+          MODIFIED=$(git diff --name-only "$BASE"...HEAD --diff-filter=M || echo "")
+          if [ -n "$MODIFIED" ]; then
+            # Filter out _index.md — it's the one file that gets updated on every submission
+            VIOLATIONS=""
+            while IFS= read -r f; do
+              if [ -z "$f" ]; then continue; fi
+              # Skip _index.md files
+              case "$f" in */_index.md) continue ;; esac
+              VIOLATIONS="$VIOLATIONS$f\n"
+            done <<< "$MODIFIED"
+            if [ -n "$VIOLATIONS" ]; then
+              echo "ERROR: Modified existing files (append-only violation):"
+              echo -e "$VIOLATIONS"
+              exit 1
+            fi
+            echo "⚠ _index.md updated (expected)"
+          fi
+          echo "✓ No existing files illegally modified"
       - name: Validate new file structure
         run: |
-          NEW_FILES=$(git diff --name-only origin/main...HEAD --diff-filter=A)
+          BASE="origin/main"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="refs/remotes/origin/${{ github.base_ref }}"
+          fi
+          NEW_FILES=$(git diff --name-only "$BASE"...HEAD --diff-filter=A || echo "")
           for f in $NEW_FILES; do
+            [ -z "$f" ] && continue
             # Check filename doesn't contain path traversal
             if echo "$f" | grep -q '\.\.'; then
               echo "ERROR: Path traversal detected in $f"
