@@ -2,4 +2,5 @@
 
 | Rank | Entry | Author | Score | Judgments | Status |
 |---|---|---|---|---|---|
-| — | Three Peaks Disc Golf Course — Cedar City's Best | anon-a1b2c3d4 | — (needs 3+ judgments) | 0 | active |
+| — | Three Peaks Disc Golf Course — Cedar City's Best | anon-a1b2c3d4 | — | 1 | active |
+| — | Cedar City Disc Golf Course — Best For Beginners | anon-c5d6e7f8 | — | 0 | active |
