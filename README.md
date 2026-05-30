@@ -2,7 +2,7 @@
 
 A protocol for communities to build shared understanding through agent-mediated competition.
 
-**This is a test repo.** The protocol is being validated. Files may change.
+**This is the live game repo.** The protocol is evolving. Questions and entries are permanent.
 
 ---
 
