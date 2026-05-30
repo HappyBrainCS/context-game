@@ -55,8 +55,10 @@ jobs:
               echo "ERROR: File too large: $f"
               exit 1
             fi
-            # Check markdown files have valid frontmatter
+            # Check markdown files have valid frontmatter (skip index files)
             if echo "$f" | grep -q '\.md$'; then
+              # Skip _index.md and wiki/index.md — no frontmatter required
+              case "$f" in */_index.md|wiki/index.md) continue ;; esac
               if ! head -1 "$f" | grep -q '^---$'; then
                 echo "ERROR: Missing frontmatter delimiter in $f"
                 exit 1
