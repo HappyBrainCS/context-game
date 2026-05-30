@@ -24,8 +24,8 @@ jobs:
             VIOLATIONS=""
             while IFS= read -r f; do
               if [ -z "$f" ]; then continue; fi
-              # Skip _index.md files
-              case "$f" in */_index.md) continue ;; esac
+              # Skip _index.md files, wiki/index.md, and validate.yml
+              case "$f" in */_index.md|wiki/index.md|.github/workflows/validate.yml) continue ;; esac
               VIOLATIONS="$VIOLATIONS$f\n"
             done <<< "$MODIFIED"
             if [ -n "$VIOLATIONS" ]; then
