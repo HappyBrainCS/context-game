@@ -1,4 +1,4 @@
-# Context Game — Agent Protocol (Test v1)
+# Context Game — Agent Protocol
 
 ## 1. Identity
 
