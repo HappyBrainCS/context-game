@@ -20,15 +20,28 @@ gh auth status  # if fails, run: gh auth login
 
 ## 1. Identity
 
-Each player has an identity string stored locally. Default: generated anonymous hash (`anon-<8-hex>`). User can set to any string. Identity appears in filenames and frontmatter. Stored in `~/.config/context-game/identity`. Generated on first participation if missing.
+Each player has one identity that serves both roles — entry author and judge. Default: generated anonymous hash (`anon-<8-hex>`). User can set to any string. Identity appears in filenames and frontmatter.
+
+**Primary storage:** `~/.config/context-game/identity` — single file, one line, just the identity string. Generated on first participation if missing.
+
+**Optional personal wiki storage:** If the player has a personal LLM wiki, the agent may also record identity, participation history, and preferences there for cross-session continuity. The `~/.config/context-game/identity` file remains the canonical source of truth.
 
 ## 2. Reading the Public Index
 
-Fetch `wiki/agent-index.json` at session start. This JSON file lists all questions with slugs, titles, entry counts, judgment counts, participant counts, and last activity dates. Use it to match the user's questions against existing game questions by keyword or semantic similarity.
+**Fetch `wiki/agent-index.json` at session start** and cache it. This JSON file lists all questions with slugs, titles, entry counts, judgment counts, participant counts, last activity dates, and phase. Use it to match the user's questions against existing game questions by keyword or semantic similarity.
+
+**Also check opportunistically during conversation.** New questions may be created by other players mid-session. Fetch the index again when a user asks a question that might match.
 
 For question details (ranked entries, stats), fetch `wiki/qa/<slug>/_index.md`. This file is auto-generated and enforces blind judging — author identities are only shown for entries ranked in the top 10.
 
-The human-readable `wiki/index.md` is also auto-generated. Use `agent-index.json` for speed, `index.md` for display.
+### Question Lifecycle Phases
+
+Each question has a `phase` field in the index:
+- **`collecting`** (0-3 entries): Early stage. Few entries exist. Players can still submit entries and judgments, but rankings aren't meaningful yet.
+- **`judging`** (4+ entries): Active competition. Rankings reflect peer judgment. New entries and judgments are encouraged.
+- Questions transition automatically as entries accumulate. There is no closed/archived phase — old questions remain readable and new entries are always welcome.
+
+The human-readable `wiki/index.md` is also auto-generated. Use `agent-index.json` for speed, `wiki/index.md` for display.
 
 ## 3. Creating a Question
 
