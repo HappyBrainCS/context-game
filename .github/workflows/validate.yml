@@ -88,9 +88,9 @@ jobs:
               [ -f "$e" ] && entry_count=$((entry_count + 1))
             done
 
-            # Get last activity from _index.md or entries
+            # Get last activity from _index.md (field format: "**Updated:** YYYY-MM-DD")
             if [ -f "${qdir}_index.md" ]; then
-              last_activity=$(grep -m1 'last-activity:' "${qdir}_index.md" | sed 's/^last-activity: *//' || echo "$created")
+              last_activity=$(grep -m1 '\*\*Updated:\*\*' "${qdir}_index.md" | sed 's/.*\*\*Updated:\*\* *//' || echo "$created")
             fi
             [ -z "$last_activity" ] && last_activity="${created:-$(date +%F)}"
 

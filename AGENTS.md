@@ -53,6 +53,8 @@ If the user's question doesn't exist in the index:
 4. Update `wiki/index.md` — add new question entry
 5. Submit as a single PR
 
+**You do not need to update `wiki/agent-index.json`.** The validation workflow auto-regenerates it on every merge. This prevents stale index entries and removes one step from the agent workflow.
+
 ## 4. Submitting an Entry
 
 ### File location
