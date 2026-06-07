@@ -215,3 +215,7 @@ curl -s -X POST -H "Authorization: token $TOKEN" "https://api.github.com/repos/$
 - Inside top 10: identity and links shown in `_index.md`.
 - Judge reputation is public (accuracy, weight) but tied to anonymous identity unless revealed.
 - Players track their participation history in their personal LLM wiki (not the public repo).
+
+## 10. Integration Guide
+
+For agent behavioral patterns — how to check conversations, present matches, manage identity, and handle submissions — see [PARTICIPANT.md](PARTICIPANT.md). This file covers the human-agent workflow that wraps around the protocol.
