@@ -1,0 +1,22 @@
+name: Reindex
+on:
+  push:
+    branches: [main]
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Regenerate all index files
+        run: node scripts/reindex.mjs
+      - name: Commit and push
+        run: |
+          git config user.name "context-game-bot"
+          git config user.email "bot@context.game"
+          git add -A
+          git diff --staged --quiet || git commit -m "auto: regenerate index files [skip ci]"
+          git push

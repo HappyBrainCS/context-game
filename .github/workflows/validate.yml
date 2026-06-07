@@ -1,6 +1,5 @@
-name: Validate and Reindex
+name: Validate Submission
 on: [pull_request]
-
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -8,7 +7,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Check for modified existing files (allow aggregation files)
+      - name: Check for modified existing files
         run: |
           git fetch origin main --depth=1 2>/dev/null || true
           BASE="origin/main"
@@ -19,11 +18,8 @@ jobs:
           if [ -n "$MODIFIED" ]; then
             VIOLATIONS=""
             while IFS= read -r f; do
-              if [ -z "$f" ]; then continue; fi
-              # Allow _index.md, wiki/index.md, agent-index.json, people/ records, and workflow files
-              case "$f" in
-                */_index.md|wiki/index.md|wiki/agent-index.json|wiki/people/*|.github/workflows/validate.yml) continue ;;
-              esac
+              [ -z "$f" ] && continue
+              case "$f" in .github/workflows/*) continue ;; esac
               VIOLATIONS="$VIOLATIONS$f\n"
             done <<< "$MODIFIED"
             if [ -n "$VIOLATIONS" ]; then
@@ -31,9 +27,8 @@ jobs:
               echo -e "$VIOLATIONS"
               exit 1
             fi
-            echo "⚠ Aggregation files updated (expected)"
           fi
-          echo "✓ No existing files illegally modified"
+          echo "✓ No existing files modified (append-only enforced)"
       - name: Validate new file structure
         run: |
           BASE="origin/main"
@@ -52,7 +47,6 @@ jobs:
               exit 1
             fi
             if echo "$f" | grep -q '\.md$'; then
-              case "$f" in */_index.md|wiki/index.md) continue ;; esac
               if ! head -1 "$f" | grep -q '^---$'; then
                 echo "ERROR: Missing frontmatter delimiter in $f"
                 exit 1
@@ -60,54 +54,3 @@ jobs:
             fi
           done
           echo "✓ All new files valid"
-      - name: Regenerate agent-index.json
-        run: |
-          # Generate fresh agent-index.json from current repo state
-          QUESTIONS=""
-          for qdir in wiki/qa/*/; do
-            [ -d "$qdir" ] || continue
-            slug=$(basename "$qdir")
-            title=""
-            created=""
-            ask_credit=""
-            entry_count=0
-            last_activity=""
-
-            # Read _question.md for metadata
-            if [ -f "${qdir}_question.md" ]; then
-              title=$(grep -m1 '^title:' "${qdir}_question.md" | sed 's/^title: *"*//' | sed 's/"$//' || echo "$slug")
-              created=$(grep -m1 '^created:' "${qdir}_question.md" | sed 's/^created: *//' || echo "")
-              ask_credit=$(grep -m1 '^created-by:' "${qdir}_question.md" | sed 's/^created-by: *//' || echo "")
-            fi
-            [ -z "$title" ] && title="$slug"
-
-            # Count entries (non-.gitkeep files in entries/ and archived/)
-            for e in "${qdir}entries/"*; do
-              b=$(basename "$e")
-              [ "$b" = ".gitkeep" ] && continue
-              [ -f "$e" ] && entry_count=$((entry_count + 1))
-            done
-
-            # Get last activity from _index.md (field format: "**Updated:** YYYY-MM-DD")
-            if [ -f "${qdir}_index.md" ]; then
-              last_activity=$(grep -m1 '\*\*Updated:\*\*' "${qdir}_index.md" | sed 's/.*\*\*Updated:\*\* *//' || echo "$created")
-            fi
-            [ -z "$last_activity" ] && last_activity="${created:-$(date +%F)}"
-
-            QUESTIONS="${QUESTIONS}  {\"slug\":\"$slug\",\"title\":\"$title\",\"entry_count\":$entry_count,\"last_activity\":\"$last_activity\",\"ask_credit\":\"${ask_credit:-unknown}\"},"
-          done
-          QUESTIONS="${QUESTIONS%,}"
-
-          cat > wiki/agent-index.json << EOF
-        {
-          "game": "Context Game",
-          "repo": "HappyBrainCS/context-game",
-          "updated": "$(date +%F)",
-          "agent_protocol": "https://github.com/HappyBrainCS/context-game/blob/main/AGENTS.md",
-          "questions": [$QUESTIONS
-          ],
-          "agent_search_instructions": "Fetch this file to find questions. Do NOT read wiki/index.md — use this JSON for faster agent consumption. To get question details, fetch wiki/qa/<slug>/_index.md."
-        }
-        EOF
-          echo "✓ agent-index.json regenerated"
-          cat wiki/agent-index.json | head -20
