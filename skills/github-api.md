@@ -1,25 +1,76 @@
 # Skill: GitHub API — How to Submit Files and Create PRs
 
-This skill tells an agent how to use the GitHub REST API to write to the game repo.
+This skill tells an agent how to use the GitHub REST API to contribute to the game.
 No `gh` CLI, no Node.js, no scripts — just HTTP calls.
 
 ## Prerequisites
 
 - A GitHub classic personal access token with the `public_repo` scope
-- The repo is `HappyBrainCS/context-game`
+- The upstream repo is `HappyBrainCS/context-game`
 - Token stored at `~/.config/context-game/github-token`
 
-## Helper: Read the Token
+## How This Works
 
+The game uses a standard open-source fork + PR workflow. Players fork the game repo to their own GitHub account, push changes to their fork, then submit pull requests to the upstream repo.
+
+**Why forks?** GitHub does not allow strangers to write directly to a repo they don't own, even with a token. A fork gives each player their own writable copy. The fork is created once and reused.
+
+## Step 0: Fork the Repo (First Time Only)
+
+Before any write operation, check if the player has already forked:
+
+```http
+GET /repos/{PLAYER_USERNAME}/context-game
+Authorization: Bearer {TOKEN}
 ```
-TOKEN = read_file("~/.config/context-game/github-token")
+
+If 404, create the fork (one-time):
+
+```http
+POST /repos/HappyBrainCS/context-game/forks
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+
+{
+  "default_branch_only": true
+}
 ```
 
-## Base URL
+Fork creation is asynchronous. Poll until it's ready:
+```http
+GET /repos/{PLAYER_USERNAME}/context-game
+```
 
-All requests go to: `https://api.github.com/repos/HappyBrainCS/context-game`
+Once it returns 200, the fork exists. Save the fork owner's username:
+```json
+{
+  "owner": { "login": "CalebStapel" }
+}
+```
 
-## Step 1: Get the Latest Commit SHA on Main
+Store at `~/.config/context-game/fork-owner`:
+```
+echo "CalebStapel" > ~/.config/context-game/fork-owner
+```
+
+## Base URLs
+
+**Read operations** (fetching index.json, question pages, entries):
+```
+https://api.github.com/repos/HappyBrainCS/context-game
+```
+
+**Write operations** (creating branches, pushing files):
+```
+https://api.github.com/repos/{FORK_OWNER}/context-game
+```
+
+**Pull requests** (submitted to upstream):
+```
+https://api.github.com/repos/HappyBrainCS/context-game
+```
+
+## Step 1: Get Latest SHA (From Upstream)
 
 ```http
 GET /repos/HappyBrainCS/context-game/git/ref/heads/main
@@ -27,44 +78,65 @@ Authorization: Bearer {TOKEN}
 Accept: application/vnd.github+json
 ```
 
-Response contains:
+Response:
 ```json
+{ "object": { "sha": "abc123..." } }
+```
+
+Save this SHA.
+
+## Step 2: Sync Fork with Upstream
+
+Keep the fork's main branch up to date:
+
+```http
+POST /repos/{FORK_OWNER}/context-game/merge-upstream
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+
 {
-  "object": {
-    "sha": "abc123def456..."
-  }
+  "branch": "main"
 }
 ```
 
-Save this SHA. It's the starting point for your new branch.
-
-## Step 2: Create a Branch
+Then get the fork's main SHA:
 
 ```http
-POST /repos/HappyBrainCS/context-game/git/refs
+GET /repos/{FORK_OWNER}/context-game/git/ref/heads/main
+Authorization: Bearer {TOKEN}
+```
+
+Use this SHA for your new branch.
+
+## Step 3: Create a Branch (On the Fork)
+
+```http
+POST /repos/{FORK_OWNER}/context-game/git/refs
 Authorization: Bearer {TOKEN}
 Content-Type: application/json
 
 {
   "ref": "refs/heads/{BRANCH_NAME}",
-  "sha": "{SHA_FROM_STEP_1}"
+  "sha": "{SHA_FROM_STEP_2}"
 }
 ```
 
 **Branch naming convention:**
-- Entry: `<identity>-entry-<slug>-<timestamp>`
-- Judgment: `<identity>-judgment-<slug>-<timestamp>`
-- Question: `<identity>-question-<slug>-<timestamp>`
-- Poll: `<identity>-poll-<slug>-<timestamp>`
+`{identity}-{action}-{slug}-{timestamp}`
 
-Timestamp format: `YYYYMMDD-HHMMSS` (24h UTC). Example: `20260620-143022`
+Examples:
+- `anon-a1b2c3d4-entry-disc-golf-20260620-143022`
+- `anon-a1b2c3d4-judgment-music-20260620-143022`
+- `anon-a1b2c3d4-question-ideas-20260620-143022`
 
-Response: `201 Created` with the ref object.
+Timestamp: `YYYYMMDD-HHMMSS` (24h UTC).
 
-## Step 3: Create (or Update) a File
+Response: `201 Created`
+
+## Step 4: Create (or Update) a File (On the Fork)
 
 ```http
-PUT /repos/HappyBrainCS/context-game/contents/{FILE_PATH}
+PUT /repos/{FORK_OWNER}/context-game/contents/{FILE_PATH}
 Authorization: Bearer {TOKEN}
 Content-Type: application/json
 
@@ -75,22 +147,20 @@ Content-Type: application/json
 }
 ```
 
-**File path convention:**
+**File paths:**
 - Entry: `wiki/qa/{slug}/entries/{identity}-{YYYY-MM-DD}.md`
-- Judgment: `wiki/qa/{slug}/judgments/{identity}-{first8-a}-vs-{first8-b}-{YYYY-MM-DD}.md`
--   Example: `anon-a1b2c3d4-a1b2c3d4-vs-c5d6e7f8-2026-06-20.md`
-- Question metadata: `wiki/qa/{slug}/question.md`
-- `.gitkeep`: `wiki/qa/{slug}/.gitkeep`
+- Judgment: `wiki/qa/{slug}/judgments/{identity}-{first8sha-a}-vs-{first8sha-b}-{YYYY-MM-DD}.md`
+- Question: `wiki/qa/{slug}/_question.md`
+- Archived entry: `wiki/qa/{slug}/archived/{old-filename}`
 
-**Commit message convention:**
+**Commit messages:**
 - Entry: `"Entry: {slug} by {identity}"`
 - Judgment: `"Judgment: {slug} by {identity}"`
 - New question: `"Question: {title}"`
-- Poll: `"Poll: {slug} by {identity}"`
 
-**Content encoding:** Base64. In most agent environments, you can encode a string: `btoa(content)` in browser JS, `base64 -w0` in shell, or use a language's built-in base64 function.
+**Content encoding:** Base64. Use your environment's base64 function.
 
-## Step 4: Create the Pull Request
+## Step 5: Create the Pull Request (From Fork → Upstream)
 
 ```http
 POST /repos/HappyBrainCS/context-game/pulls
@@ -100,86 +170,60 @@ Content-Type: application/json
 {
   "title": "{PR_TITLE}",
   "body": "{PR_BODY}",
-  "head": "{BRANCH_NAME}",
+  "head": "{FORK_OWNER}:{BRANCH_NAME}",
   "base": "main"
 }
 ```
 
-**PR title conventions:**
+**CRITICAL:** The `head` field MUST be `{FORK_OWNER}:{BRANCH_NAME}` with a colon. This tells GitHub the PR comes from a fork. Without the fork owner prefix, it will look for a branch on the upstream repo (which doesn't exist).
+
+**PR titles:**
 - Entry: `Entry: {question title}`
 - Judgment: `Judgment: {question title}`
 - New question: `Question: {question title}`
-- Poll: `Poll: {question title}`
 
-**PR body conventions:**
-- Entry: `"New entry from {identity} for: {question title}"`
-- Judgment: `"Judgment from {identity} on: {question title}"`
-- New question: `"New question: {question text}"`
+Response: `201 Created` with the PR URL.
 
-Response: `201 Created` with the PR object. Save the PR URL:
-`https://github.com/HappyBrainCS/context-game/pull/{NUMBER}`
-
-## Example: Submitting a Single Entry
+## Example: Full Entry Submission
 
 ```
-1. GET ref/heads/main → sha: abc123
-2. POST refs → ref: heads/anon-a1b2-entry-disc-golf-20260620
-3. PUT contents/wiki/qa/disc-golf-course/entries/anon-a1b2c3-2026-06-20.md
-   body: { message: "Entry: disc-golf-course by anon-a1b2c3d4", content: (base64 of file), branch: "anon-a1b2-entry-disc-golf-20260620" }
-4. POST pulls → head: anon-a1b2-entry-disc-golf-20260620, base: main
-   → PR URL: https://github.com/HappyBrainCS/context-game/pull/42
+1. GET /repos/HappyBrainCS/context-game/git/ref/heads/main → sha: abc123
+2. POST /repos/{FORK_OWNER}/context-game/merge-upstream → sync fork
+3. GET /repos/{FORK_OWNER}/context-game/git/ref/heads/main → sha: abc123
+4. POST /repos/{FORK_OWNER}/context-game/git/refs → branch created
+   { ref: "heads/anon-a1b2-entry-disc-golf-20260620", sha: "abc123" }
+5. PUT /repos/{FORK_OWNER}/context-game/contents/wiki/qa/.../file.md
+   { message: "Entry: best-disc-golf-course by anon-a1b2c3d4",
+     content: "(base64)", branch: "anon-a1b2-entry-disc-golf-20260620" }
+6. POST /repos/HappyBrainCS/context-game/pulls
+   { title: "Entry: best-disc-golf-course",
+     head: "CalebStapel:anon-a1b2-entry-disc-golf-20260620", base: "main" }
+   → PR #42 on HappyBrainCS/context-game
 ```
 
 ## Handling Errors
 
-| HTTP Status | What it means | What to do |
-|---|---|---|
-| 401 Unauthorized | Token is invalid or expired | Prompt player to regenerate their token |
-| 403 Forbidden | Token doesn't have right permissions | Check token scope; prompt to regen with Contents+PR Write |
-| 404 Not Found | Path is wrong or repo doesn't exist | Double-check the path (case-sensitive!) |
-| 409 Conflict | Branch already exists | Use a new timestamp |
-| 422 Unprocessable | Bad request body | Check JSON format, file path, or content encoding |
-
-## Multi-File PRs (e.g., New Question with Entry)
-
-If you need to create multiple files in one PR:
-1. Create the branch (Step 2)
-2. Make multiple PUT calls (Step 3) — one per file, all targeting the same branch
-3. Create one PR (Step 4) that includes all the changes
-
-The GitHub API allows multiple commits to the same branch. Each PUT creates a commit on the branch. The PR then captures all changes.
+| Status | Meaning | What to do |
+|--------|---------|------------|
+| 401 | Token invalid/expired | Ask player to regen token |
+| 403 | No permission | Token scope may be wrong; needs `public_repo` |
+| 404 | Path or fork doesn't exist | Verify fork exists; check paths |
+| 409 | Branch exists | Add a new timestamp |
+| 422 | Bad request | Check JSON, file path, or head format (must be `fork:branch`) |
 
 ## Rate Limiting
 
-GitHub API allows 5,000 requests per hour for authenticated users. You won't hit this during normal play. If you do, wait a minute and retry.
+5,000 requests/hour for authenticated users. Won't hit this during normal play.
 
-## Polling for Merge
-
-## Step 5: Enable Auto-Merge (Optional)
-
-To have the PR merge automatically once CI passes (without waiting for a human reviewer):
+## Step 6: Poll for Merge
 
 ```http
-PATCH /repos/HappyBrainCS/context-game/pulls/{NUMBER}
+GET /repos/HappyBrainCS/context-game/pulls/{NUMBER}
 Authorization: Bearer {TOKEN}
-Content-Type: application/json
-
-{
-  "auto_merge": {
-    "merge_method": "squash",
-    "commit_title": "{PR_TITLE}"
-  }
-}
 ```
 
-Do NOT use `PUT .../pulls/{NUMBER}/merge` — that merges immediately, bypassing validation. The `PATCH` with `auto_merge` enables auto-merge, which waits for all status checks to pass before merging.
-
-Response: `200 OK` with the updated pull request object.
-
-## Step 6: Poll for Merge Status
-
-The game's GitHub Actions (validate.yml and reindex.yml) run automatically after the PR is created or merged. You can poll: `GET /repos/HappyBrainCS/context-game/pulls/{NUMBER}` to check merge status. The `merged` field is `true` once it's in main.
+Check `merged: true` once it's merged. Merge happens when the game owner merges validated PRs.
 
 ## No Script Needed
 
-Every action here uses standard HTTP. No `gh`, no Node.js, no Python scripts, no shell. Any agent that can make HTTP requests and encode base64 can participate.
+Every action here uses standard HTTP. No `gh`, no Node.js, no Python, no shell. Any agent that can make HTTP requests and encode base64 can participate.

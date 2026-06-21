@@ -5,6 +5,7 @@ Player says they want to write an answer to a question.
 
 ## Prerequisites
 - Player has a GitHub token (from `~/.config/context-game/github-token`)
+- Player has a fork (from `~/.config/context-game/fork-owner`)
 - Player has an identity (from `~/.config/context-game/identity`)
 - The question slug is known (e.g., `whats-the-best-disc-golf-course-in-cedar-city`)
 
@@ -12,7 +13,7 @@ Player says they want to write an answer to a question.
 
 Before writing, check if the player already has an entry for this question.
 
-Fetch the entries directory: `GET https://api.github.com/repos/HappyBrainCS/context-game/contents/wiki/qa/<slug>/entries`
+Fetch the entries directory from the **upstream**: `GET https://api.github.com/repos/HappyBrainCS/context-game/contents/wiki/qa/<slug>/entries`
 
 Search for any file starting with the player's identity hash. If found, note the filename — the player is updating an existing entry, not creating a new one.
 

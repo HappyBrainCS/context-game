@@ -47,12 +47,35 @@ Here's exactly what to do:
 6. Copy the token and paste it here
 ```
 
-**Important:** The `public_repo` scope works on any public repo. You do NOT need to select or search for "HappyBrainCS/context-game" — the token just works because our game repo is public.
+**Important:** The `public_repo` scope is the only one needed. You do NOT need to select specific repos.
 
 Store the token:
 ```
 echo "ghp_xxxxx" > ~/.config/context-game/github-token
 ```
+
+### Step 3b: Fork the Repo (First Time Only)
+
+With the token stored, the player needs to fork the game repo. This gives them their own copy of the repo to write to.
+
+**The agent handles this automatically.**
+
+```http
+POST /repos/HappyBrainCS/context-game/forks
+Authorization: Bearer {TOKEN}
+Content-Type: application/json
+
+{
+  "default_branch_only": true
+}
+```
+
+Wait for the fork to complete (poll until `GET /repos/{player-username}/context-game` returns 200). Then store the fork owner:
+```
+echo "{player-username}" > ~/.config/context-game/fork-owner
+```
+
+The player doesn't need to do anything special — the fork happens in the background on GitHub's servers. No download, no local storage.
 
 If no: The player is read-only. They can browse and read but can't submit. That's fine.
 

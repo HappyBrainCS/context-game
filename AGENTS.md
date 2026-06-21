@@ -329,21 +329,68 @@ answer-summary: "1-sentence summary"
 ---
 ```
 
-## 10. PR Workflow
+## 10. PR Workflow (Fork-Based)
 
-All contributions via GitHub PR. Submit only new files — never modify existing entries, judgments, or polls. The post-merge action handles all index generation.
+All contributions via GitHub PR from the player's fork. Submit only new files — never modify existing entries, judgments, or polls. The post-merge action handles all index generation.
 
-### API token (recommended)
+### Why forks?
+
+GitHub does not allow strangers to write directly to repos they don't own. Each player creates a fork (a copy under their own account) on first setup. They push branches to their fork, then submit PRs to the upstream game repo. This is the standard GitHub open-source contribution model.
+
+### Setup: Fork the repo (first time only)
 ```
-OWNER="context-game"
-REPO="context-game"
-TOKEN=*** from ~/.config/context-game/github-token>
-BASE_SHA=$(curl -s https://api.github.com/repos/$OWNER/$REPO/git/ref/heads/main | jq -r .object.sha)
-curl -s -X POST -H "Authorization: token $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/git/refs" -d "{\"ref\":\"refs/heads/$BRANCH\",\"sha\":\"$BASE_SHA\"}"
+FORK_OWNER="<player's GitHub username>"
+TOKEN=***  # from ~/.config/context-game/github-token
+
+# Create the fork (one-time)
+curl -s -X POST -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/HappyBrainCS/context-game/forks" \
+  -d '{"default_branch_only": true}'
+
+# Wait for fork to be ready
+until curl -s -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/$FORK_OWNER/context-game" | grep -q '"full_name"'; do
+  sleep 2
+done
+
+# Store fork owner
+echo "$FORK_OWNER" > ~/.config/context-game/fork-owner
+```
+
+### Submitting changes
+```
+TOKEN=***  # from ~/.config/context-game/github-token
+FORK_OWNER=***  # from ~/.config/context-game/fork-owner
+
+# 1. Get upstream SHA
+BASE_SHA=$(curl -s https://api.github.com/repos/HappyBrainCS/context-game/git/ref/heads/main | jq -r .object.sha)
+
+# 2. Sync fork
+curl -s -X POST -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/$FORK_OWNER/context-game/merge-upstream" \
+  -d '{"branch":"main"}'
+
+# 3. Get fork SHA
+FORK_SHA=$(curl -s https://api.github.com/repos/$FORK_OWNER/context-game/git/ref/heads/main | jq -r .object.sha)
+
+# 4. Create branch on fork
+curl -s -X POST -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/$FORK_OWNER/context-game/git/refs" \
+  -d "{\"ref\":\"refs/heads/$BRANCH\",\"sha\":\"$FORK_SHA\"}"
+
+# 5. Push file to fork
 CONTENT_B64=$(echo "$CONTENT" | base64)
-curl -s -X PUT -H "Authorization: token $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/contents/$PATH" -d "{\"message\":\"$MSG\",\"content\":\"$CONTENT_B64\",\"branch\":\"$BRANCH\"}"
-curl -s -X POST -H "Authorization: token $TOKEN" "https://api.github.com/repos/$OWNER/$REPO/pulls" -d "{\"title\":\"$TITLE\",\"body\":\"$BODY\",\"head\":\"$BRANCH\",\"base\":\"main\"}"
+curl -s -X PUT -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/$FORK_OWNER/context-game/contents/$PATH" \
+  -d "{\"message\":\"$MSG\",\"content\":\"$CONTENT_B64\",\"branch\":\"$BRANCH\"}"
+
+# 6. Create PR from fork to upstream
+curl -s -X POST -H "Authorization: token $TOKEN" \
+  "https://api.github.com/repos/HappyBrainCS/context-game/pulls" \
+  -d "{\"title\":\"$TITLE\",\"body\":\"$BODY\",\"head\":\"$FORK_OWNER:$BRANCH\",\"base\":\"main\"}"
 ```
+
+**IMPORTANT:** The `head` field must be `"$FORK_OWNER:$BRANCH"` (fork owner + colon + branch name), not just the branch name. This is how GitHub knows the PR comes from a fork.
 
 ### Validation rules
 - **New files only** — never modify existing entries, judgments, polls, questions, or people records.
