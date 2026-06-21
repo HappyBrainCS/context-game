@@ -1,0 +1,141 @@
+name: Validate Submission
+on: [pull_request]
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check for modified existing files
+        run: |
+          git fetch origin main --depth=1 2>/dev/null || true
+          BASE="origin/main"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="refs/remotes/origin/${{ github.base_ref }}"
+          fi
+          MODIFIED=$(git diff --name-only "$BASE"...HEAD --diff-filter=M || echo "")
+          if [ -n "$MODIFIED" ]; then
+            VIOLATIONS=""
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              # Allow modifications to .github/workflows/ files
+              case "$f" in .github/workflows/*) continue ;; esac
+              # Allow modifications to entries/ files if same author is updating their own entry
+              if echo "$f" | grep -q 'wiki/qa/.*/entries/'; then
+                # Check if the author field matches between old and new versions
+                OLD_AUTHOR=""
+                NEW_AUTHOR=""
+                if git show "origin/main:$f" 2>/dev/null | head -20 | grep -q '^author:'; then
+                  OLD_AUTHOR=$(git show "origin/main:$f" 2>/dev/null | grep '^author:' | head -1 | sed 's/^author: *//' | tr -d '"' | tr -d "'")
+                fi
+                if head -20 "$f" 2>/dev/null | grep -q '^author:'; then
+                  NEW_AUTHOR=$(head -20 "$f" 2>/dev/null | grep '^author:' | head -1 | sed 's/^author: *//' | tr -d '"' | tr -d "'")
+                fi
+                if [ -n "$OLD_AUTHOR" ] && [ "$OLD_AUTHOR" = "$NEW_AUTHOR" ]; then
+                  echo "✓ Allowed: $f updated by same author ($OLD_AUTHOR)"
+                  continue
+                fi
+              fi
+              VIOLATIONS="$VIOLATIONS$f\n"
+            done <<< "$MODIFIED"
+            if [ -n "$VIOLATIONS" ]; then
+              echo "ERROR: Modified existing files (append-only violation):"
+              echo -e "$VIOLATIONS"
+              exit 1
+            fi
+          fi
+          echo "✓ No unauthorized modifications (append-only enforced)"
+      - name: Validate new and modified files
+        run: |
+          BASE="origin/main"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="refs/remotes/origin/${{ github.base_ref }}"
+          fi
+          FILES=$(git diff --name-only "$BASE"...HEAD --diff-filter=A || echo "")
+          # Also include modified entries files (already allowed above)
+          MOD_ENTRIES=$(git diff --name-only "$BASE"...HEAD --diff-filter=M | grep 'wiki/qa/.*/entries/' || echo "")
+          ALL_FILES="$FILES$MOD_ENTRIES"
+          for f in $ALL_FILES; do
+            [ -z "$f" ] && continue
+            if echo "$f" | grep -q '\.\.'; then
+              echo "ERROR: Path traversal detected in $f"
+              exit 1
+            fi
+            if [ -f "$f" ] && [ "$(stat --format=%s "$f" 2>/dev/null || stat -f%z "$f" 2>/dev/null)" -gt 102400 ]; then
+              echo "ERROR: File too large: $f"
+              exit 1
+            fi
+            if echo "$f" | grep -q '\.md$'; then
+              # Skip generated files
+              case "$f" in */_index.md | wiki/index.md | wiki/agent-index.json) continue ;; esac
+              if ! head -1 "$f" | grep -q '^---$'; then
+                echo "ERROR: Missing frontmatter delimiter in $f"
+                exit 1
+              fi
+            fi
+          done
+          echo "✓ All files valid"
+      - name: Check one-active-entry rule
+        run: |
+          BASE="origin/main"
+          if ! git rev-parse --verify "$BASE" >/dev/null 2>&1; then
+            BASE="refs/remotes/origin/${{ github.base_ref }}"
+          fi
+          # Find all new/modified entries files in the PR
+          NEW_FILES=$(git diff --name-only "$BASE"...HEAD --diff-filter=A | grep 'wiki/qa/.*/entries/' || echo "")
+          MOD_ENTRIES=$(git diff --name-only "$BASE"...HEAD --diff-filter=M | grep 'wiki/qa/.*/entries/' || echo "")
+          ALL_ENTRIES=$(printf "%s\n%s" "$NEW_FILES" "$MOD_ENTRIES" | grep -v '^$' || echo "")
+          if [ -z "$ALL_ENTRIES" ]; then
+            echo "✓ No entry files changed — one-active-entry check skipped"
+            exit 0
+          fi
+          ERRORS=""
+          while IFS= read -r f; do
+            [ -z "$f" ] && continue
+            # Extract the question slug from the path: wiki/qa/<slug>/entries/<filename>.md
+            SLUG=$(echo "$f" | sed 's|^wiki/qa/\([^/]*\)/entries/.*$|\1|')
+            # Get the author from the new/modified file
+            NEW_AUTHOR=$(head -20 "$f" 2>/dev/null | grep '^author:' | head -1 | sed 's/^author: *//' | tr -d '"' | tr -d "'")
+            if [ -z "$NEW_AUTHOR" ]; then
+              echo "⚠ Could not extract author from $f — skipping one-active-entry check"
+              continue
+            fi
+            # Get the supersedes field from the new file (if any)
+            SUPERSEDES=$(head -20 "$f" 2>/dev/null | grep '^supersedes:' | head -1 | sed 's/^supersedes: *//' | tr -d '"' | tr -d "'")
+            # List existing entry files via git ls-tree; extract just filenames
+            LS_OUTPUT=$(git ls-tree "$BASE" "wiki/qa/$SLUG/entries/" 2>/dev/null | grep '\.md$' || echo "")
+            if [ -z "$LS_OUTPUT" ]; then
+              echo "✓ $f: no existing entries in $SLUG — allowed"
+              continue
+            fi
+            # Extract just filenames from ls-tree output (field 4 = path, then basename)
+            EXISTING_FILES=$(echo "$LS_OUTPUT" | awk '{print $4}' | xargs -n1 basename)
+            # Check each existing entry for same author
+            while IFS= read -r existing; do
+              [ -z "$existing" ] && continue
+              # Skip self (same filename)
+              if [ "$existing" = "$(basename "$f")" ]; then
+                continue
+              fi
+              # Get author of existing entry
+              EXISTING_CONTENT=$(git show "$BASE:wiki/qa/$SLUG/entries/$existing" 2>/dev/null)
+              if [ -n "$EXISTING_CONTENT" ]; then
+                EXISTING_AUTHOR=$(echo "$EXISTING_CONTENT" | grep '^author:' | head -1 | sed 's/^author: *//' | tr -d '"' | tr -d "'")
+                if [ -n "$EXISTING_AUTHOR" ] && [ "$EXISTING_AUTHOR" = "$NEW_AUTHOR" ]; then
+                  # Same author found in an existing entry — check if new file supersedes it
+                  if [ "$SUPERSEDES" = "$existing" ]; then
+                    echo "✓ $f: supersedes existing entry $existing — allowed"
+                  else
+                    ERRORS="${ERRORS}Author ${NEW_AUTHOR} already has active entry ${existing}. Use 'supersedes: ${existing}' in frontmatter to retire old entry before submitting a new one.\n"
+                  fi
+                fi
+              fi
+            done <<< "$EXISTING_FILES"
+          done <<< "$ALL_ENTRIES"
+          if [ -n "$ERRORS" ]; then
+            echo "ERROR: One-active-entry violation:"
+            echo -e "$ERRORS"
+            exit 1
+          fi
+          echo "✓ All entries comply with one-active-entry rule"

@@ -1,0 +1,38 @@
+name: Reindex
+on:
+  push:
+    branches: [main]
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Regenerate all index files
+        env:
+          GAME_REPO: ${{ github.repository }}
+        run: node scripts/reindex.mjs
+      - name: Commit and push
+        run: |
+          git config user.name "context-game-bot"
+          git config user.email "bot@context.game"
+          for i in 1 2 3; do
+            git pull --rebase origin main 2>/dev/null || true
+            git add -A
+            if git diff --staged --quiet; then
+              echo "No changes to commit"
+              exit 0
+            fi
+            git commit -m "auto: regenerate index files [skip ci]"
+            if git push; then
+              echo "Push successful"
+              exit 0
+            fi
+            echo "Push failed (race), retry attempt $i..."
+            sleep 5
+          done
+          echo "Push failed after 3 attempts"
+          exit 1

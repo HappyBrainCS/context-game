@@ -1,0 +1,127 @@
+{
+  "game": "Context Game",
+  "repo": "HappyBrainCS/context-game",
+  "updated": "2026-06-21",
+  "agent_protocol": "https://github.com/HappyBrainCS/context-game/blob/main/AGENTS.md",
+  "judging_system": "head-to-head-elo",
+  "minimum_comparisons": 5,
+  "questions": [
+    {
+      "slug": "what-is-the-context-game",
+      "title": "What is the Context Game?",
+      "entry_count": 2,
+      "judgment_count": 0,
+      "participant_count": 2,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 1,
+      "locations": {
+        "Cedar City, UT": 1
+      }
+    },
+    {
+      "slug": "can-i-fork-this-project",
+      "title": "Can I fork this project?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "can-i-play-without-an-agent",
+      "title": "Can I play without an AI agent?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "how-do-people-know-whats-going-on-in-the-world",
+      "title": "How do people today know what is actually going on in the world?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 1,
+      "locations": {
+        "Cedar City, UT": 1
+      }
+    },
+    {
+      "slug": "how-do-rankings-and-judging-work",
+      "title": "How do rankings and judging work?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "how-to-play",
+      "title": "How do I play the Context Game?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "is-my-data-private",
+      "title": "Is my data private? What information gets shared?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "what-makes-a-good-wiki-entry",
+      "title": "What makes a good wiki entry?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "why-should-i-play-now",
+      "title": "Why should I play now?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    },
+    {
+      "slug": "why-was-the-context-game-made",
+      "title": "Why was the Context Game made?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 0
+    }
+  ],
+  "agent_search_instructions": "Fetch this file to find questions. Do NOT read wiki/index.md — use this JSON for faster agent consumption. To get question details, fetch wiki/qa/<slug>/_index.md. For location-based queries, use the location_index object (locations with 3+ entries). Agent-side filtering: match player's known location against question locations or location_tag. Never send player location to the server."
+}
