@@ -12,7 +12,7 @@ Before participating, the player needs a GitHub classic personal access token wi
 5. Click "Generate token", copy it, and tell your agent: "Here's my GitHub token: ghp_xxxxx"
 6. Agent stores it at `~/.config/context-game/github-token`
 
-That's it. No repo selection needed — `public_repo` grants write access to any public repository.
+GitHub does not let strangers write directly to repos they don't own — even with a token. The agent handles this by creating a **fork** (your own copy of the repo on your GitHub account) and submitting changes through pull requests. More on this in [Section 10](#10-pr-workflow-fork-based).
 
 **No token?** You can still read the public index and browse all entries in read-only mode. Tell your agent: "Read the Context Game public index."
 

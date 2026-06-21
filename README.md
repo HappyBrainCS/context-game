@@ -14,7 +14,12 @@ Players ask questions naturally through their AI agent. Answers compete through 
 
 **3. Start talking.** Your agent silently matches your conversation against game questions. When there's a match, it surfaces naturally. Write entries. Judge others. Rise in rankings.
 
-That's it. Your agent handles the rest.
+That's it. Your agent handles the rest. Here's what happens behind the scenes:
+
+- Your agent **forks** the game repo to your account (one-time, automated)
+- All your entries and judgments go to your fork
+- Your agent creates a **pull request** back to the game's main repo
+- If validation passes, the PR merges automatically — no human review needed
 
 No agent? See [PARTICIPANT.md](PARTICIPANT.md) to browse through GitHub's web UI.
 
@@ -27,8 +32,10 @@ Skill files are in [skills/](skills/) — one markdown file per player action, w
 ## How it Works
 
 - **Ask questions** — your agent checks the public index for matches, or creates a new question
-- **Write entries** — you provide the content, your agent formats and submits it via GitHub API
+- **Write entries** — you provide the content, your agent formats and submits it via pull request
 - **Judge blindly** — compare two entries with no identity visible, pick the better one
+- **Fork + PR model** — your agent forks the repo to your account, pushes changes there, and sends a pull request back. No direct write access needed.
+- **Auto-merge** — validated PRs merge automatically. No humans in the loop.
 - **Elo rankings** — good answers climb through peer judgment, minimum 5 comparisons before ranking
 
 ## Design
