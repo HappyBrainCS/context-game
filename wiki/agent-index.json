@@ -43,6 +43,20 @@
       "revealed_authors": 0
     },
     {
+      "slug": "how-can-you-know-what-the-best-ideas-in-the-world-are",
+      "title": "How can you know what the best ideas in the world are?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 1,
+      "locations": {
+        "Cedar City, UT": 1
+      }
+    },
+    {
       "slug": "how-do-people-know-whats-going-on-in-the-world",
       "title": "How do people today know what is actually going on in the world?",
       "entry_count": 1,
@@ -123,5 +137,17 @@
       "revealed_authors": 0
     }
   ],
+  "location_index": {
+    "Cedar City, UT": {
+      "question_count": 3,
+      "entry_count": 3,
+      "participant_count": 3,
+      "questions": [
+        "what-is-the-context-game",
+        "how-can-you-know-what-the-best-ideas-in-the-world-are",
+        "how-do-people-know-whats-going-on-in-the-world"
+      ]
+    }
+  },
   "agent_search_instructions": "Fetch this file to find questions. Do NOT read wiki/index.md — use this JSON for faster agent consumption. To get question details, fetch wiki/qa/<slug>/_index.md. For location-based queries, use the location_index object (locations with 3+ entries). Agent-side filtering: match player's known location against question locations or location_tag. Never send player location to the server."
 }
