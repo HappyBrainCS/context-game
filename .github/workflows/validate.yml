@@ -3,6 +3,11 @@ on: [pull_request]
 jobs:
   validate:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    outputs:
+      validated: ${{ steps.set-label.outcome == 'success' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -139,3 +144,11 @@ jobs:
             exit 1
           fi
           echo "✓ All entries comply with one-active-entry rule"
+      - name: Label validated PRs for auto-merge
+        if: success()
+        run: |
+          curl -s -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels" \
+            -d '{"labels":["automerge"]}'
