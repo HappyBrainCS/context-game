@@ -7,6 +7,20 @@
   "minimum_comparisons": 5,
   "questions": [
     {
+      "slug": "how-can-you-know-what-the-best-ideas-in-the-world-are",
+      "title": "How can you know what the best ideas in the world are?",
+      "entry_count": 2,
+      "judgment_count": 0,
+      "participant_count": 2,
+      "last_activity": "2026-06-21",
+      "ask_credit": "unknown",
+      "phase": "collecting",
+      "revealed_authors": 1,
+      "locations": {
+        "Cedar City, UT": 1
+      }
+    },
+    {
       "slug": "what-is-the-context-game",
       "title": "What is the Context Game?",
       "entry_count": 2,
@@ -41,20 +55,6 @@
       "ask_credit": "unknown",
       "phase": "collecting",
       "revealed_authors": 0
-    },
-    {
-      "slug": "how-can-you-know-what-the-best-ideas-in-the-world-are",
-      "title": "How can you know what the best ideas in the world are?",
-      "entry_count": 1,
-      "judgment_count": 0,
-      "participant_count": 1,
-      "last_activity": "2026-06-21",
-      "ask_credit": "unknown",
-      "phase": "collecting",
-      "revealed_authors": 1,
-      "locations": {
-        "Cedar City, UT": 1
-      }
     },
     {
       "slug": "how-do-people-know-whats-going-on-in-the-world",
@@ -143,8 +143,8 @@
       "entry_count": 3,
       "participant_count": 3,
       "questions": [
-        "what-is-the-context-game",
         "how-can-you-know-what-the-best-ideas-in-the-world-are",
+        "what-is-the-context-game",
         "how-do-people-know-whats-going-on-in-the-world"
       ]
     }
