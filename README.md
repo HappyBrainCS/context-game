@@ -4,7 +4,7 @@ A free, open-source knowledge competition. Ask what matters. Say what you think.
 
 ---
 
-There is no accurate public record of what people actually think — not about the big things (how should we fix the economy? what's actually working in education?) or the small things (which local restaurant is actually worth the price? what's the best neighborhood to raise a family?).
+There is no accurate public record of what people actually think — not about the big things (how should we fix the economy? what's actually working in education?) or the small things (is a 4-day workweek actually better than 5 days? should kids have phones before high school?).
 
 Not one.
 
