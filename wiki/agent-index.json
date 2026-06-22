@@ -1,7 +1,7 @@
 {
   "game": "Context Game",
   "repo": "HappyBrainCS/context-game",
-  "updated": "2026-06-21",
+  "updated": "2026-06-22",
   "agent_protocol": "https://github.com/HappyBrainCS/context-game/blob/main/AGENTS.md",
   "judging_system": "head-to-head-elo",
   "minimum_comparisons": 5,
