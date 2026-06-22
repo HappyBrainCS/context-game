@@ -1,51 +1,82 @@
 # Context Game
 
-A free, open-source knowledge competition. The repository is the game.
+A free, open-source knowledge competition. Ask what matters. Say what you think. See how it stacks up.
 
-Players ask questions naturally through their AI agent. Answers compete through blind peer judgment using Elo ratings. Every submission is a permanent git commit. No signups, no ads, no database.
+---
+
+There is no accurate public record of what people actually think — not about the big things (how should we fix the economy? what's actually working in education?) or the small things (which local restaurant is actually worth the price? what's the best neighborhood to raise a family?).
+
+Not one.
+
+Every existing platform that could provide this is limited in some fundamental way — by algorithms optimized for engagement, by paywalls, by small sample sizes, by corporate ownership, by central control.
+
+So we're left guessing about most things. Worse, we often don't even know we're guessing.
+
+The Context Game is a different approach: a public record built by anyone, ranked by everyone, owned by no one.
+
+---
+
+## How It Works
+
+You use your AI agent like normal. When a question comes up that you care about — something you want to know or have an opinion on — your agent checks the game.
+
+### Ask what matters to you
+
+If the question doesn't exist yet, your agent creates it. If it does, you see the current answers and rankings. Either way, the game grows with what people actually care about — not what a platform decides is trending.
+
+### Add your answer
+
+Write your best answer. Your agent formats it and submits it as a permanent entry. It's now part of the public record. Your answer competes against others on its own merit.
+
+### Judge to make the results meaningful
+
+If a question matters to you, your judgment matters too. Compare two answers side by side — no names, no reputations, just the content. Your vote shapes the rankings and makes the data more accurate. The more people who judge, the more you can trust where things land.
+
+You can also just read the results without judging. But if you want to know what people *really* think — and want that answer to be trustworthy — every judgment helps.
+
+### See what rises
+
+Over time, the best answers climb. The record shows not just what people think, but what's judged best and why. Anyone can verify it. Anyone can build on it. Everyone can learn from it.
+
+This is the same process at any scale. With a hundred people on a local question, the record is useful. With a million, it's more accurate than anything else that exists.
+
+---
 
 ## How to Play
 
-**1. Tell your agent:**
+**Tell your AI agent:**
 
-> "I want to play the Context Game at https://github.com/HappyBrainCS/context-game"
+> *"I want to play the Context Game at https://github.com/HappyBrainCS/context-game"*
 
-**2. Your agent reads `AGENTS.md` and sets everything up.**
+Your agent handles the rest — finding questions, submitting your entries, and showing you what to judge.
 
-**3. Start talking.** Your agent silently matches your conversation against game questions. When there's a match, it surfaces naturally. Write entries. Judge others. Rise in rankings.
+You just have to think and decide.
 
-That's it. Your agent handles the rest. Here's what happens behind the scenes:
+---
 
-- Your agent **forks** the game repo to your account (one-time, automated)
-- All your entries and judgments go to your fork
-- Your agent creates a **pull request** back to the game's main repo
-- If validation passes, the PR merges automatically — no human review needed
+## What to Do First
 
-No agent? See [PARTICIPANT.md](PARTICIPANT.md) to browse through GitHub's web UI.
+1. **Browse existing questions** — Ask your agent: *"What questions are in the Context Game?"*
+2. **Answer one that interests you** — Your opinion matters. Your answer competes on its own merit.
+3. **Judge some entries** — If the question matters to you, your judgment makes the results more real. Every comparison helps.
+4. **Ask your own question** — If something matters to you and isn't in the game, add it. The game grows with what people care about.
 
-## Getting Started
+No question is too small. No answer is too short. Real people with real perspective are what make this work.
 
-Read [AGENTS.md](AGENTS.md) — the complete protocol for how agents interact with the game. It covers setup, identity, creating questions, submitting entries, blind judging, rankings, and location data.
+---
 
-Skill files are in [skills/](skills/) — one markdown file per player action, written for AI agent consumption.
+## The Rules
 
-## How it Works
+- **Blind judging** — You never see who wrote an entry while comparing. Identity is only revealed for top-ranked answers, if the author chooses.
+- **One active entry per question** — Update your answer by replacing the old one, not adding to it.
+- **Elo ranking** — Win against a higher-ranked entry and you climb. Each judgment adjusts the ratings fairly.
+- **No deletions** — Every action is a permanent commit. History is history.
+- **Forkable by design** — MIT licensed. Run your own instance. Change the rules. See what works better.
 
-- **Ask questions** — your agent checks the public index for matches, or creates a new question
-- **Write entries** — you provide the content, your agent formats and submits it via pull request
-- **Judge blindly** — compare two entries with no identity visible, pick the better one
-- **Fork + PR model** — your agent forks the repo to your account, pushes changes there, and sends a pull request back. No direct write access needed.
-- **Auto-merge** — validated PRs merge automatically. No humans in the loop.
-- **Elo rankings** — good answers climb through peer judgment, minimum 5 comparisons before ranking
-
-## Design
-
-- **No central server** — the game runs on GitHub. No signups, no hosting costs.
-- **Blind judging** — identity is never shown during comparison. Trust the argument, not the author.
-- **Permanent record** — every submission is a git commit. Nothing gets deleted.
-- **AI agents are the interface** — the game is designed for agent-mediated play.
-- **MIT license** — free to fork, free to play, free to build on.
+---
 
 ## License
 
-MIT
+MIT — free to fork, free to play, free to build on.
+
+If this idea works, nobody should own it. That's the point.
