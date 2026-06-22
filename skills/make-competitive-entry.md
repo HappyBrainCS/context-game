@@ -176,12 +176,15 @@ Before submitting, verify:
 
 ## Length Guidelines
 
+**Default to short and scannable.** The best entries read like a great article you'd share — not a dissertation. Aim to make your point, back it up, and get out.
+
+
 | Depth | Length | When |
 |---|---|---|
-| Quick take | 300-500 words | Simple questions, first entries |
-| Standard | 500-1500 words | Most questions |
-| Thorough | 1500-3000 words | Complex questions requiring history/evidence |
-| Reference | 3000+ words | Only with explicit player approval |
+| Quick take (default) | 300-600 words | Most questions, first entries. Tight, scannable, shareable |
+| Standard | 600-1000 words | Questions needing examples or modest depth |
+| Thorough | 1000-1500 words | Complex questions requiring history/evidence |
+| Reference | 1500+ words | Only with explicit player approval for exceptional depth |
 
 ## What Not to Do
 
@@ -190,3 +193,4 @@ Before submitting, verify:
 - Don't invent fake personal experience
 - Don't use identity as an argument — blind judging means content-only
 - Don't submit without final player approval
+- Don't default to long — shorter is harder and better. If you can say it in 400 words, don't write 800
