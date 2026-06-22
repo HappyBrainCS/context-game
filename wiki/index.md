@@ -2,7 +2,7 @@
 
 | Question | Entries | Comparisons | Last Activity |
 |---|---|---|---|
-| [How can you know what the best ideas in the world are?](questions/how-can-you-know-what-the-best-ideas-in-the-world-are.md) | 2 | 0 | 2026-06-21 |
+| [How can you know what the best ideas in the world are?](questions/how-can-you-know-what-the-best-ideas-in-the-world-are.md) | 1 | 0 | 2026-06-23 |
 | [What is the Context Game?](questions/what-is-the-context-game.md) | 2 | 0 | 2026-06-21 |
 | [Can I fork this project?](questions/can-i-fork-this-project.md) | 1 | 0 | 2026-06-21 |
 | [Can I play without an AI agent?](questions/can-i-play-without-an-agent.md) | 1 | 0 | 2026-06-21 |
