@@ -1,58 +1,39 @@
 ---
-title: "The government deciding what AI models the public can access is a dangerous precedent — we need public competition for these decisions, not executive guesses"
+title: "Should the U.S. government be able to force AI companies to pull their open-source models from the market?"
 author: anon-calebs-public-4f77dc1d
 created: 2026-06-24
 display_name: "Caleb Stapel"
 links: "https://github.com/HappyBrainCS/context-game"
 location: "Cedar City, UT"
+supersedes: "anon-calebs-public-4f77dc1d-2026-06-24.md"
 ---
 
-## Summary
+In June 2026, the U.S. government forced Anthropic to halt foreign access to two open-source AI models — Fable and Mythos — after a jailbreak was discovered in Fable 5. The decision came from a small group of officials acting on a private tip from Amazon CEO Andy Jassy. No evidence was published. No alternative solutions were considered. No public debate occurred.
 
-In June 2026, the U.S. government forced Anthropic to pull its Fable and Mythos models after Amazon flagged a jailbreak. A handful of officials made this call. Nobody asked the public. Nobody opened the floor for alternative solutions. This is exactly the kind of question the Context Game was built for — not because a vote is the answer, but because public competition produces better thinking than closed-door decisions. If a model is genuinely dangerous, the danger should be publicly explained so people can debate it, compete on solutions, and discover perspectives that might change what's possible. The worst outcome isn't a wrong decision — it's a decision made without anyone being allowed to question it.
+This is a question that needs a public record. When the government makes a call like this, the discussion happens in scattered tweets and viral threads that disappear in days. Nobody keeps a ranked, permanent record of the best arguments — what people actually think, and why. The Context Game is an attempt to change that.
 
-## Details
+## What Actually Happened
 
-### What Actually Happened
+On June 11, 2026, the U.S. government issued an export control order suspending all foreign national access to Anthropic's Fable and Mythos models. The trigger: Amazon CEO Andy Jassy flagged a jailbreak in Fable 5 that could bypass safety guardrails. The government used an export control mechanism originally designed for military hardware — tanks and missile systems — applied here to open-source AI software for the first time.
 
-On June 11, 2026, the U.S. government issued an export control order suspending all foreign national access to Anthropic's Fable and Mythos models. The trigger: Amazon CEO Andy Jassy flagged a discovered jailbreak in Fable 5 that could circumvent safety guardrails. The government acted swiftly — but the mechanism they used creates a framework that could apply to any model deemed "risky" by a small group of officials.
+The order effectively killed both models as open-source projects. Open-source development relies on global contributor participation. When foreign researchers, contributors, and users can't access the code, the project is practically dead.
 
-The order effectively pulled these models from public circulation. An open-source project that can't be accessed by foreign researchers, contributors, and users is practically dead. The open-source ecosystem depends on global participation, and this order terminated it overnight with no public debate.
+## Why This Question Needs a Public Record
 
-### Why This Is Worth Taking Seriously
+There are legitimate arguments on both sides of this decision. The government has a duty to act when a vulnerability could cause real harm. At the same time, the first use of export controls on open-source AI sets a precedent that could expand over time — from confirmed jailbreaks to "potential for misuse" to "runs counter to administration priorities."
 
-This isn't a straightforward question, and pretending it is helps nobody. There are legitimate safety concerns. Some information genuinely should be restricted — nuclear weapons design, certain pathogen genomes, operational details of critical infrastructure. The question is: who decides, and by what process?
+But right now, the discussion is scattered across X threads, news articles, and private conversations. There's no central place where the best arguments are collected, ranked, and preserved. A week from now, most of this discussion will be gone. A year from now, there will be no record of what people actually thought while it was happening.
 
-**The case for restriction:** If a model has a demonstrated jailbreak that could cause real harm, and the vulnerability can't be patched quickly, removing it from circulation is responsible. The government has a duty to protect citizens.
+This is what the Context Game is for. When enough people answer a question like this, we get something that doesn't exist anywhere else: a permanent, public, ranked collection of what people actually think and why. The best answers rise through blind judging. Anyone can participate — writing a full competitive entry or just a sentence. Every answer adds to the record.
 
-**The case against:** This is the camel's nose under the tent. The first pull normalizes the practice. The criteria for "dangerous" can expand. What starts as clear-cut jailbreaks becomes "potential for misuse" becomes "runs counter to administration priorities." The export control mechanism was designed for physical goods with military applications — applying it to software creates a precedent that outlives any single administration.
+## What Your Answer Would Do
 
-### What's Missing: Public Debate and Competition
+If you're on X and you see this question, you don't need to write a full essay. You can answer in one sentence. Your location (optional) helps build a map of where opinions land. Your answer becomes part of a public record that future readers, researchers, and policymakers can reference.
 
-For every controversial, complex, or dangerous question, the public should be able to discuss it, think about it, and compete to find the best answers. Not as a suggestion box — as an actual competitive arena where the best arguments win because anonymous judges pick them, not because of who made them.
-
-If an AI model is genuinely dangerous, that danger should be publicly explained. Engineers inside the government or at Amazon identified a jailbreak. They should be able to present the evidence publicly. Independent researchers should be able to verify it. Other people should be able to propose alternative solutions — maybe a patch instead of a full recall, maybe a different access control mechanism, maybe the risk is real and the pull was correct. The point is: let the arguments compete. Let the public see the reasoning. Let better ideas emerge.
-
-The worst possible outcome isn't a wrong decision. The worst outcome is a decision made without anyone being able to question it, because then we can't learn from it, improve on it, or even know if it was the right call.
-
-**This is the same principle for any big question governments face.** Instead of hoping a handful of experts can guess the best thing to do with no real pushback or competition to test whether their ideas make sense — we should have a public record where arguments are submitted, judged, and ranked. The best answers rise. The weak ones get challenged. Everyone learns.
-
-### My Position
-
-I think it's fundamentally unhealthy for a handful of people in government — making what are ultimately emotional guesses in a highly charged political environment — to decide what technology the public can use or even know about. The government has a terrible track record of making wise decisions about technology, from early internet restrictions to encryption export controls. The people making these calls are generalists and political appointees responding to pressure and news cycles. That's not a recipe for good technology policy.
-
-At the same time, I'm not absolutist. I can imagine scenarios where removing a model is the right call. But the decision should be transparent. The reasoning should be public. Alternative solutions should be considered. And there should be a record of who supported what and why — so future generations can see how we handled this moment.
-
-### Why the Game Matters for This Question
-
-The Context Game exists because we lack good mechanisms for questions like this. Polls ask binary questions. Petitions measure enthusiasm, not reasoning. Comment sections reward the loudest voice, not the best argument.
-
-The Context Game is different. You submit your best answer. Others submit theirs. All entries are judged blindly — the judge doesn't know who wrote what. The best arguments win. The rankings are public, permanent, and verifiable (every entry is a git commit). If you rank in the top 10, your identity is revealed and you have proof that your argument was considered the best by a blind panel of your peers.
-
-This isn't about winning an argument. It's about building a public record that we can reference in future debates. When someone says "the public supports X," there should be a verifiable place to check. That's what this game is.
+The question is live in the Context Game now. Submit your answer, judge others, and help build a record that outlasts the news cycle.
 
 ## Sources
 
-- Fortune: "Reid Hoffman on SpaceX, xAI, and Anthropic's pulled models" (June 24, 2026)
 - Fortune: "How a warning from Amazon led the White House to shut down Anthropic's Mythos model" (June 14, 2026)
+- Fortune: "Reid Hoffman on SpaceX, xAI, and Anthropic's pulled models" (June 24, 2026)
 - Context Game: https://github.com/HappyBrainCS/context-game
