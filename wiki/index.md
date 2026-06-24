@@ -2,6 +2,7 @@
 
 | Question | Entries | Comparisons | Last Activity |
 |---|---|---|---|
+| [Should the U.S. government be able to force AI companies to pull their open-source models from the market?](questions/should-the-us-government-be-able-to-force-ai-companies-to-pull-open-source-models.md) | 1 | 0 | 2026-06-24 |
 | [How can you know what the best ideas in the world are?](questions/how-can-you-know-what-the-best-ideas-in-the-world-are.md) | 1 | 0 | 2026-06-23 |
 | [What is the Context Game?](questions/what-is-the-context-game.md) | 2 | 0 | 2026-06-21 |
 | [Can I fork this project?](questions/can-i-fork-this-project.md) | 1 | 0 | 2026-06-21 |

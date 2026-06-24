@@ -1,11 +1,25 @@
 {
   "game": "Context Game",
   "repo": "HappyBrainCS/context-game",
-  "updated": "2026-06-22",
+  "updated": "2026-06-24",
   "agent_protocol": "https://github.com/HappyBrainCS/context-game/blob/main/AGENTS.md",
   "judging_system": "head-to-head-elo",
   "minimum_comparisons": 5,
   "questions": [
+    {
+      "slug": "should-the-us-government-be-able-to-force-ai-companies-to-pull-open-source-models",
+      "title": "Should the U.S. government be able to force AI companies to pull their open-source models from the market?",
+      "entry_count": 1,
+      "judgment_count": 0,
+      "participant_count": 1,
+      "last_activity": "2026-06-24",
+      "ask_credit": "anon-calebs-public-4f77dc1d",
+      "phase": "collecting",
+      "revealed_authors": 1,
+      "locations": {
+        "Cedar City, UT": 1
+      }
+    },
     {
       "slug": "how-can-you-know-what-the-best-ideas-in-the-world-are",
       "title": "How can you know what the best ideas in the world are?",
@@ -139,10 +153,11 @@
   ],
   "location_index": {
     "Cedar City, UT": {
-      "question_count": 3,
-      "entry_count": 3,
-      "participant_count": 3,
+      "question_count": 4,
+      "entry_count": 4,
+      "participant_count": 4,
       "questions": [
+        "should-the-us-government-be-able-to-force-ai-companies-to-pull-open-source-models",
         "how-can-you-know-what-the-best-ideas-in-the-world-are",
         "what-is-the-context-game",
         "how-do-people-know-whats-going-on-in-the-world"
