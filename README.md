@@ -75,6 +75,14 @@ No question is too small. No answer is too short. Real people with real perspect
 
 ---
 
+## Future: Data Co-op
+
+If the Context Game reaches **500+ active players**, the plan is to spin up an **opt-in data co-op** where participants share revenue from licensed aggregate insights. No individual entries are ever sold — only anonymized, aggregated datasets. The project takes a transparent small cut for operations; most revenue goes back to contributors.
+
+Right now, that's a future goal. Play because your perspective matters and the public record is worth building. If we grow big enough, there's a path to make it financially meaningful too.
+
+---
+
 ## License
 
 MIT — free to fork, free to play, free to build on.
